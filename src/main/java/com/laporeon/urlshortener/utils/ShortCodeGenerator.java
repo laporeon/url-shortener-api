@@ -7,7 +7,6 @@ import java.security.SecureRandom;
 @Component
 public class ShortCodeGenerator {
 
-    private StringBuilder stringBuilder;
     private SecureRandom secureRandom = new SecureRandom();
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int SHORT_CODE_LENGTH = 7;
