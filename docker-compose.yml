@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url-shortener
+    ports:
+      - "${SERVER_PORT}:8080"
+    networks:
+      - url-shortener-network
+
+networks:
+  url-shortener-network:
+    name: url-shortener-network
+    driver: bridge
