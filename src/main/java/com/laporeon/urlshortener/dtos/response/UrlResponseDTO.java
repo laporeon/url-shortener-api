@@ -2,5 +2,5 @@ package com.laporeon.urlshortener.dtos.response;
 
 import java.time.LocalDateTime;
 
-public record UrlResponseDTO(String shortCode, LocalDateTime expiresAt) {
+public record UrlResponseDTO(String shortUrl, LocalDateTime expiresAt) {
 }
