@@ -3,6 +3,7 @@ package com.laporeon.urlshortener.services;
 import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
 import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
+import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.mappers.UrlMapper;
 import com.laporeon.urlshortener.repositories.UrlRepository;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
@@ -41,5 +42,9 @@ public class UrlService {
         log.info("Saved URL: {}", url);
 
         return urlMapper.toDTO(url, baseURL);
+    }
+
+    public Url findByShortCode(String shortCode) {
+        return urlRepository.findByShortCode(shortCode).orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
     }
 }
