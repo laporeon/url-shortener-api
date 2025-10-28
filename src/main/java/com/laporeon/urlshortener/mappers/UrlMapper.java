@@ -12,11 +12,10 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UrlMapper {
 
-    public UrlResponseDTO toDTO(Url url) {
-        return new UrlResponseDTO(
-                url.getShortCode(),
-                url.getExpiresAt()
-        );
+    public UrlResponseDTO toDTO(Url url, String baseURL) {
+        String shortUrl = baseURL + "/" + url.getShortCode();
+
+        return new UrlResponseDTO(shortUrl, url.getExpiresAt());
     }
 
     public Url toEntity(UrlRequestDTO dto, String shortCode, LocalDateTime expirationDate) {
