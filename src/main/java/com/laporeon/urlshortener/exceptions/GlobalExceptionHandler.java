@@ -26,6 +26,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(ShortCodeNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleShortCodeNotFoundException(ShortCodeNotFoundException ex) {
+        ErrorResponseDTO error = buildErrorResponse(HttpStatus.NOT_FOUND, List.of(ex.getMessage()));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, List<String> messages) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
