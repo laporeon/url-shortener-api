@@ -13,9 +13,9 @@ public class ShortCodeGenerator {
 
     public String generateShortCode() {
         StringBuilder stringBuilder = new StringBuilder(SHORT_CODE_LENGTH);
-        for (int i = 0; i < SHORT_CODE_LENGTH; i++) {
-            int idx = secureRandom.nextInt(CHARACTERS.length());
-            stringBuilder.append(CHARACTERS.charAt(idx));
+        for (int counter = 0; counter < SHORT_CODE_LENGTH; counter++) {
+            int index = secureRandom.nextInt(CHARACTERS.length());
+            stringBuilder.append(CHARACTERS.charAt(index));
         }
         return stringBuilder.toString();
     }
