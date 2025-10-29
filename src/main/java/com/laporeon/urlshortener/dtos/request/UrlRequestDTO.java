@@ -1,11 +1,21 @@
 package com.laporeon.urlshortener.dtos.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.URL;
+import jakarta.validation.constraints.Pattern;
+
+import java.time.LocalDate;
 
 public record UrlRequestDTO(
-        @URL(message = "Invalid or incorrectly formatted URL.")
+        @Pattern(
+                regexp = "https?://([\\w-]+\\.)+[\\w-]+(:\\d+)?(/\\S*)?",
+                message = "Invalid URL format. Make sure to include http:// or https:// and a valid domain name (e.g https://www.google.com)"
+        )
         @NotBlank(message = "Original URL cannot be empty.")
-        String originalUrl
+        String originalUrl,
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        @Future(message = "Expiration date must be a future date sent in yyyy-MM-dd format.")
+        LocalDate expirationDate
 ) {
 }
