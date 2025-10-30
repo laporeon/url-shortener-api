@@ -10,14 +10,10 @@ public class ExpirationDateGenerator {
 
     public LocalDateTime generateExpiresAt(LocalDate expirationDate) {
 
-        LocalDateTime expiresAt;
-
-        if (expirationDate == null) {
-            expiresAt = LocalDate.now().plusDays(1).atTime(23,0,0);
-        } else {
-            expiresAt = expirationDate.atTime(23, 0, 0);
+        if (expirationDate != null) {
+            return expirationDate.atTime(23, 0, 0);
         }
 
-        return expiresAt;
+        return LocalDate.now().plusDays(1).atTime(23,0,0);
     }
 }
