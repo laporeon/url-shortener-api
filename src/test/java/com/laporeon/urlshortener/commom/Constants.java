@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public class Constants {
 
-    public static final String BASE_URL = "https://localhost:8080/";
+    public static final String BASE_URL = "https://localhost:8080";
 
     public static final UrlRequestDTO VALID_URL_REQUEST_DTO = new UrlRequestDTO(
             "https://www.google.com/",
