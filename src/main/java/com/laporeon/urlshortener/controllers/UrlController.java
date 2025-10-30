@@ -64,7 +64,9 @@ public class UrlController {
 
     @Operation(
             summary = "Redirect to original URL.",
-            description = "Receives a short code and redirects to the original URL if found and not expired.",
+            description = "Receives a short code and redirects to the original URL if found and not expired.\n\n" +
+                    "**Note:** This endpoint will not work properly in Swagger UI due to CORS limitations with redirects. " +
+                    "Please test directly in your browser or using your preferred REST Client.",
             responses = {
                     @ApiResponse(responseCode = "301", description = "Moved Permanently"),
                     @ApiResponse(responseCode = "400", description = "Bad Request",
