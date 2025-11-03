@@ -84,8 +84,8 @@ public class UrlControllerTest {
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
                .andExpect(status().isBadRequest())
                .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.name()))
-               .andExpect(jsonPath("$.messages").isArray())
-               .andExpect(jsonPath("$.messages", hasItem(INVALID_URL_MESSAGE)));
+               .andExpect(jsonPath("$.messages").isMap())
+               .andExpect(jsonPath("$.messages.originalUrl").value(INVALID_URL_MESSAGE));
     }
 
     @Test
@@ -98,8 +98,8 @@ public class UrlControllerTest {
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
                .andExpect(status().isBadRequest())
                .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.name()))
-               .andExpect(jsonPath("$.messages").isArray())
-               .andExpect(jsonPath("$.messages", hasItem(INVALID_EXPIRATION_DATE_MESSAGE)));
+               .andExpect(jsonPath("$.messages").isMap())
+               .andExpect(jsonPath("$.messages.expirationDate").value(INVALID_EXPIRATION_DATE_MESSAGE));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class UrlControllerTest {
 
         mockMvc.perform(get("/" + EXPIRED_SHORT_CODE))
                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.messages").isArray())
-                .andExpect(jsonPath("$.messages", hasItem(EXPIRED_SHORT_CODE_MESSAGE)));
+                .andExpect(jsonPath("$.messages").isMap())
+                .andExpect(jsonPath("$.messages.shortCode").value(EXPIRED_SHORT_CODE_MESSAGE));
     }
 }
