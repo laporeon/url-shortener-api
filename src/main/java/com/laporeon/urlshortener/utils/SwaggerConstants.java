@@ -20,20 +20,21 @@ public class SwaggerConstants {
         {
             "status": 400,
             "error": "BAD_REQUEST",
-            "messages": [
-                "Invalid URL format. Please provide a valid URL (e.g., https://example.com)."
-            ],
+            "messages": {
+              "originalUrl": "Invalid URL format. Please provide a valid URL (e.g., https://example.com).",
+              "expirationDate": "Expiration date must be a future date (format: yyyy-MM-dd)."
+            },
             "timestamp": "2025-10-29T15:19:52.121160501Z"
-            }
+        }
         """;
 
     public static final String NOT_FOUND_ERROR_MESSAGE = """
         {
             "status": 404,
             "error": "NOT_FOUND",
-            "messages": [
-                "Short code c3esjMb does not exist or has expired."
-            ],
+            "messages": {
+                "shortCode": "Short code 845PGwV does not exist or has expired."
+            },
             "timestamp": "2025-10-29T15:19:52.121160501Z"
         }
         """;
