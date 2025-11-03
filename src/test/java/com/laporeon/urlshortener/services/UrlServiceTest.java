@@ -1,12 +1,11 @@
 package com.laporeon.urlshortener.services;
 
-import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
 import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
-import com.laporeon.urlshortener.mappers.UrlMapper;
 import com.laporeon.urlshortener.repositories.UrlRepository;
 import com.laporeon.urlshortener.utils.BaseUrlGenerator;
+import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -34,10 +33,10 @@ public class UrlServiceTest {
     private UrlRepository urlRepository;
 
     @Mock
-    private UrlMapper urlMapper;
+    private ShortCodeGenerator codeGenerator;
 
     @Mock
-    private ShortCodeGenerator codeGenerator;
+    private ExpirationDateGenerator dateGenerator;
 
     @Mock
     private BaseUrlGenerator baseUrlGenerator;
@@ -50,8 +49,7 @@ public class UrlServiceTest {
     void shortenUrl_ShouldReturnUrlResponseDTOWhenRequestDataIsValid() {
         when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(baseUrlGenerator.generateBaseUrl(request)).thenReturn(BASE_URL);
-        when(urlMapper.toEntity(any(UrlRequestDTO.class), eq(VALID_SHORT_CODE))).thenReturn(SAVED_URL_ENTITY);
-        when(urlMapper.toDTO(any(Url.class), eq(BASE_URL))).thenReturn(URL_RESPONSE_DTO);
+        when(dateGenerator.generateExpiresAt(eq(VALID_URL_REQUEST_DTO.expirationDate()))).thenReturn(SAVED_URL_ENTITY.getExpiresAt());
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
         when(urlRepository.save(any(Url.class))).thenReturn(SAVED_URL_ENTITY);
 
