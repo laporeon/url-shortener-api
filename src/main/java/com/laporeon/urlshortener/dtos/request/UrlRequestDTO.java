@@ -10,12 +10,12 @@ import java.time.LocalDate;
 public record UrlRequestDTO(
         @Pattern(
                 regexp = "https?://([\\w-]+\\.)+[\\w-]+(:\\d+)?(/\\S*)?",
-                message = "Invalid URL format. Make sure to include http:// or https:// and a valid domain name (e.g https://www.google.com)"
+                message = "Invalid URL format. Please provide a valid URL (e.g., https://example.com)."
         )
-        @NotBlank(message = "Original URL cannot be empty.")
+        @NotBlank(message = "URL is required.")
         String originalUrl,
         @JsonFormat(pattern = "yyyy-MM-dd")
-        @Future(message = "Expiration date must be a future date sent in yyyy-MM-dd format.")
+        @Future(message = "Expiration date must be a future date (format: yyyy-MM-dd).")
         LocalDate expirationDate
 ) {
 }
