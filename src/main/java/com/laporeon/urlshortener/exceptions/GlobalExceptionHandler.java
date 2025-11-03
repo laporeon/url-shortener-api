@@ -9,18 +9,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        List<String> messages = ex.getBindingResult()
-                                  .getFieldErrors()
-                                  .stream()
-                                  .map(FieldError::getDefaultMessage)
-                                  .toList();
+        Map<String, String> messages = new HashMap<>();
+        ex.getBindingResult()
+          .getFieldErrors()
+          .forEach(fieldError ->
+                           messages.put(fieldError.getField(), fieldError.getDefaultMessage())
+          );
 
         ErrorResponseDTO error = buildErrorResponse(HttpStatus.BAD_REQUEST, messages);
 
@@ -29,12 +32,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ShortCodeNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleShortCodeNotFoundException(ShortCodeNotFoundException ex) {
-        ErrorResponseDTO error = buildErrorResponse(HttpStatus.NOT_FOUND, List.of(ex.getMessage()));
+        Map<String, String> messages = new HashMap<>();
+        messages.put("shortCode", ex.getMessage());
+
+        ErrorResponseDTO error = buildErrorResponse(HttpStatus.NOT_FOUND, messages);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, List<String> messages) {
+    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, Map<String, String> messages) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.name(),
