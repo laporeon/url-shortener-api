@@ -21,7 +21,7 @@ public class SwaggerConstants {
             "status": 400,
             "error": "BAD_REQUEST",
             "messages": [
-                "Invalid URL format. Make sure to include http:// or https:// and a valid domain name (e.g https://www.google.com)"
+                "Invalid URL format. Please provide a valid URL (e.g., https://example.com)."
             ],
             "timestamp": "2025-10-29T15:19:52.121160501Z"
             }
