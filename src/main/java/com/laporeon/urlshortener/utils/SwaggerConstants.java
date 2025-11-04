@@ -12,7 +12,7 @@ public class SwaggerConstants {
     public static final String URL_RESPONSE_EXAMPLE = """
         {
             "shortUrl": "https://localhost:8080/v2esjMb",
-            "expiresAt": "2025-10-29T23:00:00Z"
+            "expiresAt": "2025-11-10T14:27:34.238168440Z"
         }
         """;
 
