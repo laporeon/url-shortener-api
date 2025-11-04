@@ -1,11 +1,8 @@
 package com.laporeon.urlshortener.dtos.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record UrlResponseDTO(
         String shortUrl,
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime expiresAt) {
+        Instant expiresAt) {
 }
