@@ -9,6 +9,7 @@ import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
 import jakarta.servlet.http.HttpServletRequest;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,59 +50,60 @@ public class UrlServiceTest {
     @InjectMocks
     private UrlService urlService;
 
-    private Url validUrlEntity;
-    private UrlRequestDTO validRequestDTO;
-    private UrlResponseDTO expectedResponseDTO;
+    private static final String VALID_SHORT_CODE = "a1b2c3d";
+    private static final String VALID_URL = "https://www.youtube.com";
+    private static final LocalDate VALID_EXPIRATION_DATE = LocalDate.now().plusDays(5);
+    private static final String BASE_URL = "http://localhost:8080";
 
-    private final String VALID_SHORT_CODE = "a1b2c3d";
-    private final String VALID_URL = "https://www.youtube.com";
-    private final LocalDate VALID_EXPIRATION_DATE = LocalDate.now().plusDays(1);
-    private final String BASE_URL = "http://localhost:8080/";
+    private Instant createdAt;
+    private Instant expiresAt;
+    private Url urlEntity;
 
     @BeforeEach
     void setUp() {
-        validRequestDTO = new UrlRequestDTO(
-                VALID_URL,
-                VALID_EXPIRATION_DATE
-        );
-        validUrlEntity = Url.builder()
-                            .id("69026cdf278513d576c67059")
-                            .shortCode(VALID_SHORT_CODE)
-                            .originalUrl(validRequestDTO.originalUrl())
-                            .expiresAt(VALID_EXPIRATION_DATE.atTime(23,0,0))
-                            .createdAt(LocalDateTime.now())
-                            .build();
-        expectedResponseDTO = new UrlResponseDTO(BASE_URL + "/" + VALID_SHORT_CODE, validUrlEntity.getExpiresAt());
+        createdAt = Instant.now();
+        expiresAt = Instant.now().plus(5, ChronoUnit.DAYS);
+
+        urlEntity = Url.builder()
+                       .id(new ObjectId().toString())
+                       .shortCode(VALID_SHORT_CODE)
+                       .originalUrl(VALID_URL)
+                       .expiresAt(expiresAt)
+                       .createdAt(createdAt)
+                       .build();
     }
 
     @Test
     @DisplayName("Should shorten Url successfully when given valid request data")
-    void shouldShourtenUrlSuccessfullyWhenGivenRequestData() {
-        when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
+    void shouldShortenUrlSuccessfullyWhenGivenRequestData() {
+        UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, VALID_EXPIRATION_DATE);
+
         when(baseUrlGenerator.generateBaseUrl(request)).thenReturn(BASE_URL);
-        when(dateGenerator.generateExpiresAt(eq(validRequestDTO.expirationDate()))).thenReturn(validUrlEntity.getExpiresAt());
+        when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(expiresAt);
+        when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
-        when(urlRepository.save(any(Url.class))).thenReturn(validUrlEntity);
+        when(urlRepository.save(any(Url.class))).thenReturn(urlEntity);
 
-        UrlResponseDTO sut = urlService.shortenUrl(validRequestDTO);
+        UrlResponseDTO response = urlService.shortenUrl(requestDTO);
 
-        assertThat(sut.shortUrl()).isEqualTo(expectedResponseDTO.shortUrl());
-        assertThat(sut.expiresAt()).isEqualTo(expectedResponseDTO.expiresAt());
+        assertThat(response.shortUrl()).isEqualTo(BASE_URL + "/" + VALID_SHORT_CODE);
+        assertThat(response.expiresAt()).isEqualTo(expiresAt);
 
+        verify(codeGenerator, times(1)).generateShortCode();
         verify(urlRepository, times(1)).save(any(Url.class));
-        verify(urlRepository, atLeastOnce()).existsByShortCode(VALID_SHORT_CODE);
+        verify(urlRepository, times(1)).existsByShortCode(VALID_SHORT_CODE);
     }
 
     @Test
-    @DisplayName("Should return Url entity when short code exists and has not expired")
+    @DisplayName("Should return URL when short code exists and has not expired")
     void shouldReturnUrlEntityWhenShortCodeExistsAndIsNotExpired() {
-        when(urlRepository.findByShortCode(VALID_SHORT_CODE)).thenReturn(Optional.of(validUrlEntity));
+        when(urlRepository.findByShortCode(VALID_SHORT_CODE)).thenReturn(Optional.of(urlEntity));
 
-        Url sut = urlService.findByShortCode(VALID_SHORT_CODE);
+        Url result = urlService.findByShortCode(VALID_SHORT_CODE);
 
-        assertThat(sut.getId()).isEqualTo(validUrlEntity.getId());
-        assertThat(sut.getShortCode()).isEqualTo(validUrlEntity.getShortCode());
-        assertThat(sut.getExpiresAt()).isEqualTo(validUrlEntity.getExpiresAt());
+        assertThat(result.getId()).isEqualTo(urlEntity.getId());
+        assertThat(result.getShortCode()).isEqualTo(urlEntity.getShortCode());
+        assertThat(result.getExpiresAt()).isEqualTo(urlEntity.getExpiresAt());
 
         verify(urlRepository, times(1)).findByShortCode(VALID_SHORT_CODE);
     }
