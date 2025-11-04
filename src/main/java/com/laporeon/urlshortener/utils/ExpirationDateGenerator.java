@@ -2,18 +2,20 @@ package com.laporeon.urlshortener.utils;
 
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Component
 public class ExpirationDateGenerator {
 
-    public LocalDateTime generateExpiresAt(LocalDate expirationDate) {
+    public Instant generateExpiresAt(LocalDate expirationDate) {
 
         if (expirationDate != null) {
-            return expirationDate.atTime(23, 0, 0);
+            long daysUntilExpiration = ChronoUnit.DAYS.between(LocalDate.now(), expirationDate);
+            return Instant.now().plus(daysUntilExpiration, ChronoUnit.DAYS);
         }
 
-        return LocalDate.now().plusDays(1).atTime(23,0,0);
+        return Instant.now().plus(24, ChronoUnit.HOURS);
     }
 }
