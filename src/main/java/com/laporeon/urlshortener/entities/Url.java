@@ -5,12 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.time.LocalDateTime;
-
+import java.time.Instant;
 
 @Document(collection = "urls")
 @Data
@@ -29,10 +29,11 @@ public class Url {
     private String originalUrl;
 
     @Field(name = "expires_at")
-    private LocalDateTime expiresAt;
+    @Indexed(name = "ttl", expireAfter = "0")
+    private Instant expiresAt;
 
     @CreatedDate
     @Field(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
 }
