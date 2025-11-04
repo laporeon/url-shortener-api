@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -33,7 +33,7 @@ public class UrlService {
             shortCode = codeGenerator.generateShortCode();
         } while(urlRepository.existsByShortCode(shortCode));
 
-        LocalDateTime expiresAt = dateGenerator.generateExpiresAt(dto.expirationDate());
+        Instant expiresAt = dateGenerator.generateExpiresAt(dto.expirationDate());
 
         Url url = Url.builder()
                      .shortCode(shortCode)
