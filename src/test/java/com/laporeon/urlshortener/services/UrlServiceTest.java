@@ -5,10 +5,8 @@ import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
-import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
-import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,9 +32,6 @@ import static org.mockito.Mockito.*;
 public class UrlServiceTest {
 
     @Mock
-    private HttpServletRequest request;
-
-    @Mock
     private UrlRepository urlRepository;
 
     @Mock
@@ -43,9 +39,6 @@ public class UrlServiceTest {
 
     @Mock
     private ExpirationDateGenerator dateGenerator;
-
-    @Mock
-    private BaseUrlGenerator baseUrlGenerator;
 
     @InjectMocks
     private UrlService urlService;
@@ -76,9 +69,10 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Should shorten Url successfully when given valid request data")
     void shouldShortenUrlSuccessfullyWhenGivenRequestData() {
+        ReflectionTestUtils.setField(urlService, "BASE_URL", "http://localhost:8080");
+
         UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, VALID_EXPIRATION_DATE);
 
-        when(baseUrlGenerator.generateBaseUrl(request)).thenReturn(BASE_URL);
         when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(expiresAt);
         when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
