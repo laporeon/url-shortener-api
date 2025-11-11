@@ -5,11 +5,12 @@ import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
+import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -19,15 +20,13 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class UrlService {
 
-    @Value("${app.base-url}")
-    private String BASE_URL;
-
     private final UrlRepository urlRepository;
     private final ShortCodeGenerator codeGenerator;
     private final ExpirationDateGenerator dateGenerator;
+    private final BaseUrlGenerator baseUrlGenerator;
 
 
-    public UrlResponseDTO shortenUrl(UrlRequestDTO dto) {
+    public UrlResponseDTO shortenUrl(UrlRequestDTO dto, HttpServletRequest request) {
         String shortCode;
         do {
             shortCode = codeGenerator.generateShortCode();
@@ -45,7 +44,9 @@ public class UrlService {
 
         log.info("Short code: {} generated for URL: {}", shortCode, url.getOriginalUrl());
 
-        String shortUrl = BASE_URL + "/" + url.getShortCode();
+        String baseURL = baseUrlGenerator.generateBaseUrl(request);
+
+        String shortUrl = baseURL + "/" + url.getShortCode();
 
         return new UrlResponseDTO(
                 shortUrl,
