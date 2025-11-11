@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +58,8 @@ public class UrlController {
             }
     )
     @PostMapping("/shorten-url")
-    public ResponseEntity<UrlResponseDTO> shortenUrl(@Valid @RequestBody UrlRequestDTO dto) {
-        UrlResponseDTO urlResponseDTO = urlService.shortenUrl(dto);
+    public ResponseEntity<UrlResponseDTO> shortenUrl(@Valid @RequestBody UrlRequestDTO dto, HttpServletRequest request) {
+        UrlResponseDTO urlResponseDTO = urlService.shortenUrl(dto, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(urlResponseDTO);
     }
 
