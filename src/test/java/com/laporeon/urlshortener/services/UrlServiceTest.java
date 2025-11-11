@@ -5,8 +5,10 @@ import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
+import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
 import com.laporeon.urlshortener.utils.ShortCodeGenerator;
+import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -39,6 +40,12 @@ public class UrlServiceTest {
 
     @Mock
     private ExpirationDateGenerator dateGenerator;
+
+    @Mock
+    private BaseUrlGenerator baseUrlGenerator;
+
+    @Mock
+    private HttpServletRequest request;
 
     @InjectMocks
     private UrlService urlService;
@@ -69,21 +76,21 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Should shorten Url successfully when given valid request data")
     void shouldShortenUrlSuccessfullyWhenGivenRequestData() {
-        ReflectionTestUtils.setField(urlService, "BASE_URL", "http://localhost:8080");
-
         UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, VALID_EXPIRATION_DATE);
 
         when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(expiresAt);
         when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
         when(urlRepository.save(any(Url.class))).thenReturn(urlEntity);
+        when(baseUrlGenerator.generateBaseUrl(request)).thenReturn(BASE_URL);
 
-        UrlResponseDTO response = urlService.shortenUrl(requestDTO);
+        UrlResponseDTO response = urlService.shortenUrl(requestDTO, request);
 
         assertThat(response.shortUrl()).isEqualTo(BASE_URL + "/" + VALID_SHORT_CODE);
         assertThat(response.expiresAt()).isEqualTo(expiresAt);
 
         verify(codeGenerator, times(1)).generateShortCode();
+        verify(baseUrlGenerator, times(1)).generateBaseUrl(request);
         verify(urlRepository, times(1)).save(any(Url.class));
         verify(urlRepository, times(1)).existsByShortCode(VALID_SHORT_CODE);
     }
