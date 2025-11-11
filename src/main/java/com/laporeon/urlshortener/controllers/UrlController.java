@@ -6,6 +6,7 @@ import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.services.UrlService;
 import com.laporeon.urlshortener.utils.SwaggerConstants;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
 
@@ -91,5 +93,15 @@ public class UrlController {
 
         return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(headers).build();
 
+    }
+
+    /**
+     * Redirects the root URL ("/") to Swagger UI documentation page.
+     * This endpoint is hidden from Swagger docs to avoid cluttering the API documentation.
+     */
+    @Hidden
+    @GetMapping("/")
+    public RedirectView redirectHomeToSwaggerDocs() {
+        return new RedirectView("/swagger-ui/index.html");
     }
 }
