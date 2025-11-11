@@ -6,6 +6,7 @@ import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.services.UrlService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -83,7 +84,7 @@ public class UrlControllerTest {
 
         String expectedShortUrl = BASE_URL + "/" + VALID_SHORT_CODE;
 
-        when(urlService.shortenUrl(any(UrlRequestDTO.class))).thenReturn(urlResponseDTO);
+        when(urlService.shortenUrl(any(UrlRequestDTO.class), any(HttpServletRequest.class))).thenReturn(urlResponseDTO);
 
         mockMvc.perform(post(SHORTEN_URL_ENDPOINT)
                                 .contentType(MediaType.APPLICATION_JSON)
