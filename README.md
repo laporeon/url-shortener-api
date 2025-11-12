@@ -62,12 +62,12 @@ For production or deployments on platforms like Render, AWS, or any service hand
 
 Rename  `.env.example` to `.env` and modify variables according to your needs.
 
-| Variable       | For Docker | For Local Development | Default                         | Description                                                                |
-| -------------- | ---------- | --------------------- | ------------------------------- | -------------------------------------------------------------------------- |
-| SERVER_PORT    | Optional   | Optional              | 8080                            | Server port                                                                |
-| MONGO_USER     | Optional   | **Required**              | -                               | MongoDB username                                                           |
+| Variable | For Docker | For Local Development | Default                         | Description                                                                |
+| ------- | ---------- | --------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| PORT    | Optional   | Optional              | 8080                            | Server port                                                                |
+| MONGO_USER | Optional   | **Required**              | -                               | MongoDB username                                                           |
 | MONGO_PASSWORD | Optional   | **Required**              | -                               | MongoDB password                                                           |
-| MONGO_URI      | Optional   | Optional              | Auto-built from other variables | Full MongoDB connection URI (set explicitly only in production/deployment) |
+| MONGO_URI | Optional   | Optional              | Auto-built from other variables | Full MongoDB connection URI (set explicitly only in production/deployment) |
 
 ## Usage
 
