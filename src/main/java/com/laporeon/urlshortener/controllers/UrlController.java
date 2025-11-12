@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
@@ -85,9 +86,11 @@ public class UrlController {
 
         Url url = urlService.findByShortCode(shortCode);
 
+        URI location = UriComponentsBuilder.fromUriString(url.getOriginalUrl()).build().toUri();
+
         HttpHeaders headers = new HttpHeaders();
 
-        headers.setLocation(URI.create(url.getOriginalUrl()));
+        headers.setLocation(location);
 
         log.info("Redirecting to URL: {}", url.getOriginalUrl());
 
