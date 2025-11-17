@@ -73,7 +73,7 @@ public class UrlController {
                     "Please test directly in your browser or using your preferred REST Client.",
             responses = {
                     @ApiResponse(responseCode = "301", description = "Moved Permanently"),
-                    @ApiResponse(responseCode = "400", description = "Bad Request",
+                    @ApiResponse(responseCode = "404", description = "Not Found",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
