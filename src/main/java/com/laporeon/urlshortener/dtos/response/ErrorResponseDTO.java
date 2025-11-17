@@ -4,7 +4,8 @@ import java.time.Instant;
 import java.util.Map;
 
 public record ErrorResponseDTO(int status,
-                               String error,
-                               Map<String, String> messages,
+                               String type,
+                               String title,
+                               Map<String, String> details,
                                Instant timestamp) {
 }
