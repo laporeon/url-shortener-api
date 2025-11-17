@@ -103,9 +103,9 @@ public class UrlControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
                .andExpect(status().isBadRequest())
-               .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.name()))
-               .andExpect(jsonPath("$.messages").isMap())
-               .andExpect(jsonPath("$.messages.originalUrl").value(INVALID_URL_MESSAGE));
+               .andExpect(jsonPath("$.type").value(HttpStatus.BAD_REQUEST.name()))
+               .andExpect(jsonPath("$.details").isMap())
+               .andExpect(jsonPath("$.details.originalUrl").value(INVALID_URL_MESSAGE));
     }
 
     @Test
@@ -117,9 +117,9 @@ public class UrlControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(invalidRequest)))
                .andExpect(status().isBadRequest())
-               .andExpect(jsonPath("$.error").value(HttpStatus.BAD_REQUEST.name()))
-               .andExpect(jsonPath("$.messages").isMap())
-               .andExpect(jsonPath("$.messages.expirationDate").value(INVALID_EXPIRATION_DATE_MESSAGE));
+               .andExpect(jsonPath("$.type").value(HttpStatus.BAD_REQUEST.name()))
+               .andExpect(jsonPath("$.details").isMap())
+               .andExpect(jsonPath("$.details.expirationDate").value(INVALID_EXPIRATION_DATE_MESSAGE));
     }
 
     @Test
@@ -142,8 +142,8 @@ public class UrlControllerTest {
 
         mockMvc.perform(get("/" + expiredShortCode))
                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.messages").isMap())
-                .andExpect(jsonPath("$.messages.shortCode")
+                .andExpect(jsonPath("$.details").isMap())
+                .andExpect(jsonPath("$.details.shortCode")
                                    .value(EXPIRED_SHORT_CODE_MESSAGE.formatted(expiredShortCode)));
     }
 }

@@ -19,8 +19,9 @@ public class SwaggerConstants {
     public static final String VALIDATION_ERROR_MESSAGE = """
         {
             "status": 400,
-            "error": "BAD_REQUEST",
-            "messages": {
+            "type": "BAD_REQUEST",
+            "title": "Validation Failed",
+            "details": {
               "originalUrl": "Invalid URL format. Please provide a valid URL (e.g., https://example.com).",
               "expirationDate": "Expiration date must be a future date (format: yyyy-MM-dd)."
             },
@@ -31,8 +32,9 @@ public class SwaggerConstants {
     public static final String NOT_FOUND_ERROR_MESSAGE = """
         {
             "status": 404,
-            "error": "NOT_FOUND",
-            "messages": {
+            "type": "NOT_FOUND",
+            "title": "Resource Not Found",
+            "details": {
                 "shortCode": "Short code 845PGwV does not exist or has expired."
             },
             "timestamp": "2025-10-29T15:19:52.121160501Z"

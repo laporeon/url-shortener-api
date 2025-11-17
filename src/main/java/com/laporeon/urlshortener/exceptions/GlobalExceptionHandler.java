@@ -23,26 +23,34 @@ public class GlobalExceptionHandler {
                            messages.put(fieldError.getField(), fieldError.getDefaultMessage())
           );
 
-        ErrorResponseDTO error = buildErrorResponse(HttpStatus.BAD_REQUEST, messages);
+        ErrorResponseDTO error = buildErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Validation Failed",
+                messages);
 
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(ShortCodeNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleShortCodeNotFoundException(ShortCodeNotFoundException ex) {
+
         Map<String, String> messages = new HashMap<>();
         messages.put("shortCode", ex.getMessage());
 
-        ErrorResponseDTO error = buildErrorResponse(HttpStatus.NOT_FOUND, messages);
+        ErrorResponseDTO error = buildErrorResponse(
+                HttpStatus.NOT_FOUND,
+                "Resource Not Found",
+                messages);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, Map<String, String> messages) {
+    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, String title, Map<String, String> details) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.name(),
-                messages,
+                title,
+                details,
                 Instant.now()
         );
     }
