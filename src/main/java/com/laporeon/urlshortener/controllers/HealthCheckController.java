@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.util.Map;
+
 @Slf4j
 @RestController
 public class HealthCheckController {
@@ -16,9 +19,14 @@ public class HealthCheckController {
      */
     @Hidden
     @GetMapping("/health")
-    public ResponseEntity<String> health() {
+    public ResponseEntity<Map<String, Object>> healthCheck() {
         log.info("Health check accessed");
-        return ResponseEntity.ok("Health check OK");
+
+        return ResponseEntity.ok(Map.of(
+                "status", "Service is UP",
+                "path", "/health",
+                "timestamp", Instant.now()
+        ));
     }
 
 }
