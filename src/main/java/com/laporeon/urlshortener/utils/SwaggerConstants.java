@@ -20,7 +20,7 @@ public class SwaggerConstants {
         {
             "status": 400,
             "type": "BAD_REQUEST",
-            "title": "Validation Failed",
+            "message": "Validation Failed",
             "details": {
               "originalUrl": "Invalid URL format. Please provide a valid URL (e.g., https://example.com).",
               "expirationDate": "Expiration date must be a future date (format: yyyy-MM-dd)."
@@ -33,10 +33,19 @@ public class SwaggerConstants {
         {
             "status": 404,
             "type": "NOT_FOUND",
-            "title": "Resource Not Found",
+            "message": "Resource Not Found",
             "details": {
                 "shortCode": "Short code 845PGwV does not exist or has expired."
             },
+            "timestamp": "2025-10-29T15:19:52.121160501Z"
+        }
+        """;
+
+    public static final String INTERNAL_ERROR_MESSAGE = """
+        {
+            "status": 500,
+            "type": "INTERNAL_SERVER_ERROR",
+            "message": "An unexpected error occurred",
             "timestamp": "2025-10-29T15:19:52.121160501Z"
         }
         """;
