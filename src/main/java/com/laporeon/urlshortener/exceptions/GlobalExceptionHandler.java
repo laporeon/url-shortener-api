@@ -59,11 +59,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
-    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, String title, Map<String, String> details) {
+    private ErrorResponseDTO buildErrorResponse(HttpStatus httpStatus, String message, Map<String, String> details) {
         return new ErrorResponseDTO(
                 httpStatus.value(),
                 httpStatus.name(),
-                title,
+                message,
                 details,
                 Instant.now()
         );
