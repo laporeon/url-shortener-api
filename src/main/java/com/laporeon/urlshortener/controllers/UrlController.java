@@ -57,7 +57,12 @@ public class UrlController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.VALIDATION_ERROR_MESSAGE)))
+                                    examples = @ExampleObject(value = SwaggerConstants.VALIDATION_ERROR_MESSAGE))),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(value = SwaggerConstants.INTERNAL_ERROR_MESSAGE)))
             }
     )
     @PostMapping("/shorten-url")
@@ -77,7 +82,12 @@ public class UrlController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.NOT_FOUND_ERROR_MESSAGE)))
+                                    examples = @ExampleObject(value = SwaggerConstants.NOT_FOUND_ERROR_MESSAGE))),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    examples = @ExampleObject(value = SwaggerConstants.INTERNAL_ERROR_MESSAGE)))
             }
     )
     @GetMapping("/{shortCode}")
