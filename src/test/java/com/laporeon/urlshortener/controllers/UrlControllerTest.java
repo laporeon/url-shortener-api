@@ -143,8 +143,17 @@ public class UrlControllerTest {
 
         mockMvc.perform(get("/" + expiredShortCode))
                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.type").value(NOT_FOUND_ERROR_TYPE))
-                .andExpect(jsonPath("$.message")
-                                   .value(NOT_FOUND_ERROR_MESSAGE.formatted(expiredShortCode)));
+               .andExpect(jsonPath("$.type").value(NOT_FOUND_ERROR_TYPE))
+               .andExpect(jsonPath("$.message").value(NOT_FOUND_ERROR_MESSAGE.formatted(expiredShortCode)));
+    }
+
+    @Test
+    @DisplayName("GET / - Should redirect to Swagger UI")
+    void shouldRedirectToSwaggerUI() throws Exception {
+        String swaggerUiEndpoint = "/swagger-ui/index.html";
+
+        mockMvc.perform(get("/"))
+               .andExpect(status().isFound())
+               .andExpect(redirectedUrl(swaggerUiEndpoint));
     }
 }
