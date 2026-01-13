@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -25,7 +26,7 @@ public class UrlService {
     private final ExpirationDateGenerator dateGenerator;
     private final BaseUrlGenerator baseUrlGenerator;
 
-
+    @Transactional
     public UrlResponseDTO shortenUrl(UrlRequestDTO dto, HttpServletRequest request) {
         String shortCode;
         do {
@@ -42,14 +43,12 @@ public class UrlService {
 
         urlRepository.save(url);
 
-        log.info("Short code: {} generated for URL: {}", shortCode, url.getOriginalUrl());
+        log.info("Short code '{}' generated for URL {} at {}", shortCode, url.getOriginalUrl(), Instant.now());
 
         String baseURL = baseUrlGenerator.generateBaseUrl(request);
 
-        String shortUrl = baseURL + "/" + url.getShortCode();
-
         return new UrlResponseDTO(
-                shortUrl,
+                baseURL + "/" + url.getShortCode(),
                 url.getExpiresAt()
         );
     }

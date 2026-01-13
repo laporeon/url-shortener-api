@@ -3,9 +3,8 @@ package com.laporeon.urlshortener.controllers;
 import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
 import com.laporeon.urlshortener.dtos.response.ErrorResponseDTO;
 import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
-import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.services.UrlService;
-import com.laporeon.urlshortener.utils.SwaggerConstants;
+import com.laporeon.urlshortener.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,12 +16,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
@@ -44,28 +41,28 @@ public class UrlController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UrlRequestDTO.class),
-                            examples = @ExampleObject(value = SwaggerConstants.URL_REQUEST_EXAMPLE)
+                            examples = @ExampleObject(value = SwaggerExamples.CREATE_SHORT_URL_REQUEST)
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Created",
+                    @ApiResponse(responseCode = "201", description = "Successfully Shorten URL",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UrlResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.URL_RESPONSE_EXAMPLE))),
-                    @ApiResponse(responseCode = "400", description = "Bad Request",
+                                    examples = @ExampleObject(value = SwaggerExamples.SHORTEN_URL_SUCCESS_RESPONSE))),
+                    @ApiResponse(responseCode = "400", description = "Request validation failed",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.VALIDATION_ERROR_MESSAGE))),
+                                    examples = @ExampleObject(value = SwaggerExamples.VALIDATION_ERROR_RESPONSE))),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.INTERNAL_ERROR_MESSAGE)))
+                                    examples = @ExampleObject(value = SwaggerExamples.INTERNAL_ERROR_RESPONSE)))
             }
     )
-    @PostMapping("/shorten-url")
+    @PostMapping("/shorten")
     public ResponseEntity<UrlResponseDTO> shortenUrl(@Valid @RequestBody UrlRequestDTO dto, HttpServletRequest request) {
         UrlResponseDTO urlResponseDTO = urlService.shortenUrl(dto, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(urlResponseDTO);
@@ -77,34 +74,26 @@ public class UrlController {
                     "**Note:** This endpoint will not work properly in Swagger UI due to CORS limitations with redirects. " +
                     "Please test directly in your browser or using your preferred REST Client.",
             responses = {
-                    @ApiResponse(responseCode = "301", description = "Moved Permanently"),
-                    @ApiResponse(responseCode = "404", description = "Not Found",
+                    @ApiResponse(responseCode = "302", description = "Short code found"),
+                    @ApiResponse(responseCode = "404", description = "Resource not found",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.NOT_FOUND_ERROR_MESSAGE))),
+                                    examples = @ExampleObject(value = SwaggerExamples.NOT_FOUND_ERROR_RESPONSE))),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerConstants.INTERNAL_ERROR_MESSAGE)))
+                                    examples = @ExampleObject(value = SwaggerExamples.INTERNAL_ERROR_RESPONSE)))
             }
     )
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") String shortCode) {
-        log.info("Short Code requested: {}", shortCode);
+        String originalUrl = urlService.findByShortCode(shortCode).getOriginalUrl();
 
-        Url url = urlService.findByShortCode(shortCode);
+        log.info("Redirecting | shortCode={} | target={}", shortCode, originalUrl);
 
-        URI location = UriComponentsBuilder.fromUriString(url.getOriginalUrl()).build().toUri();
-
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setLocation(location);
-
-        log.info("Redirecting to URL: {}", url.getOriginalUrl());
-
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).headers(headers).build();
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
 
     }
 
