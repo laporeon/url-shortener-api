@@ -71,7 +71,7 @@ Rename  `.env.example` to `.env` and modify variables according to your needs.
 | Variable               | For Docker                           | For Local Development                | For Production               | Description            |
 |------------------------|--------------------------------------|--------------------------------------|------------------------------|------------------------|
 | PORT                   | Optional (Default: "8080")           | Optional (Default: "8080")           | Auto-set by platform         | Server port            |
-| SPRING_PROFILES_ACTIVE | Optional (Default: "dev")            | Optional (Default: "dev")            | **Required** (set to "prod") | Active Spring profile  |
+| SPRING_PROFILES_ACTIVE | Default: "dev"            | Optional (Default: "dev")            | **Required** (set to "prod") | Active Spring profile  |
 | MONGO_USER             | Optional (Default: "admin")          | **Required**                         | —                            | MongoDB username       |
 | MONGO_PASSWORD         | Optional (Default: "dbpassword")     | **Required**                         | —                            | MongoDB password       |
 | MONGO_DATABASE         | Optional (Default: "urlshortenerdb") | Optional (Default: "urlshortenerdb") | —                            | MongoDB database name  |
@@ -97,7 +97,7 @@ Access the application at `http://localhost:8080/docs` (or the port you configur
 |----------------|-------------|-----------------------------------------------------------------|----------------------------------------|-------------|
 | `/docs`        | GET         | -                                                               | Swagger documentation                  | None        |
 | `/shorten`     | POST        | Body with `originalUrl` and _optional_ `expirationDate` | Create a short URL from a long URL     | None        |
-| `/{shortCode}` | GET         | Path: `:shortCode`                                              | Redirects to the original URL if valid | None        |
+| `/{shortCode}` | GET         | **Path Parameters:** `shortCode`                                              | Redirects to the original URL if valid | None        |
 
 #### Requests
 
