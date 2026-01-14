@@ -2,6 +2,7 @@ package com.laporeon.urlshortener.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
+import com.laporeon.urlshortener.dtos.response.ApiMetadataDTO;
 import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
@@ -20,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+import static org.hamcrest.Matchers.hasValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,6 +42,10 @@ public class UrlControllerTest {
     private static final String NOT_FOUND_ERROR_MESSAGE =  "Short code %s does not exist or has expired.";
     private static final String SHORTEN_URL_ENDPOINT = "/shorten";
     private static final String BASE_URL = "https://localhost:8080";
+
+    private static final String API_NAME = "URL Shortener API";
+    private static final String API_VERSION = "1.0.0";
+    private static final String API_STATUS = "operational";
 
     @Autowired
     private MockMvc mockMvc;
@@ -148,12 +154,16 @@ public class UrlControllerTest {
     }
 
     @Test
-    @DisplayName("GET / - Should redirect to Swagger UI")
-    void shouldRedirectToSwaggerUI() throws Exception {
-        String swaggerUiEndpoint = "/swagger-ui/index.html";
-
+    @DisplayName("GET / - Should return API metadata information")
+    void shouldReturnApiMetadataInformation() throws Exception {
         mockMvc.perform(get("/"))
-               .andExpect(status().isFound())
-               .andExpect(redirectedUrl(swaggerUiEndpoint));
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.name").value(API_NAME))
+               .andExpect(jsonPath("$.version").value(API_VERSION))
+               .andExpect(jsonPath("$.status").value(API_STATUS))
+               .andExpect(jsonPath("$.timestamp").exists())
+               .andExpect(jsonPath("$.endpoints").isMap())
+               .andExpect(jsonPath("$.endpoints").value(hasValue("POST " + SHORTEN_URL_ENDPOINT)))
+               .andExpect(jsonPath("$.documentation").exists());
     }
 }

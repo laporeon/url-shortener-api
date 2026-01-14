@@ -1,8 +1,10 @@
 package com.laporeon.urlshortener.controllers;
 
 import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
+import com.laporeon.urlshortener.dtos.response.ApiMetadataDTO;
 import com.laporeon.urlshortener.dtos.response.ErrorResponseDTO;
 import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
+import com.laporeon.urlshortener.dtos.response.ValidationErrorResponseDTO;
 import com.laporeon.urlshortener.services.UrlService;
 import com.laporeon.urlshortener.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -19,9 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.net.URI;
+import java.time.Instant;
+import java.util.Map;
 
 @Tag(name = "URL")
 @Slf4j
@@ -53,7 +56,7 @@ public class UrlController {
                     @ApiResponse(responseCode = "400", description = "Request validation failed",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class),
+                                    schema = @Schema(implementation = ValidationErrorResponseDTO.class),
                                     examples = @ExampleObject(value = SwaggerExamples.VALIDATION_ERROR_RESPONSE))),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content(
@@ -87,7 +90,7 @@ public class UrlController {
                                     examples = @ExampleObject(value = SwaggerExamples.INTERNAL_ERROR_RESPONSE)))
             }
     )
-    @GetMapping("/{shortCode}")
+    @GetMapping("/{shortCode:[A-Za-z0-9]{7}}")
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") String shortCode) {
         String originalUrl = urlService.findByShortCode(shortCode).getOriginalUrl();
 
@@ -98,12 +101,21 @@ public class UrlController {
     }
 
     /**
-     * Redirects the root URL ("/") to Swagger UI documentation page.
+     * Returns metadata information about the API.
      * This endpoint is hidden from Swagger docs to avoid cluttering the API documentation.
      */
     @Hidden
     @GetMapping("/")
-    public RedirectView redirectHomeToSwaggerDocs() {
-        return new RedirectView("/swagger-ui/index.html");
+    public ResponseEntity<ApiMetadataDTO> getApiMetadata() {
+         ApiMetadataDTO response = new ApiMetadataDTO(
+                "URL Shortener API",
+                "1.0.0",
+                "operational",
+                Instant.now(),
+                Map.of("shorten", "POST /shorten",
+                       "redirect", "GET /{shortCode}"),
+                "https://github.com/laporeon/url-shortener-api/blob/main/README.md");
+
+         return ResponseEntity.ok(response);
     }
 }
