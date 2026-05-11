@@ -3,7 +3,7 @@ package com.laporeon.urlshortener.dtos.response;
 import java.time.Instant;
 import java.util.List;
 
-public record ValidationErrorResponseDTO(
+public record ValidationErrorResponse(
         int status,
         String type,
         String message,
