@@ -1,4 +1,4 @@
-package com.laporeon.urlshortener.exceptions;
+package com.laporeon.urlshortener.exceptions.custom;
 
 public class ShortCodeNotFoundException extends RuntimeException {
 

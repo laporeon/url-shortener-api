@@ -2,13 +2,15 @@ package com.laporeon.urlshortener.dtos.response;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
-public record ValidationErrorResponseDTO(
+public record ValidationErrorResponse(
         int status,
         String type,
         String message,
-        List<Map<String, String>> errors,
+        List<FieldError> errors,
         Instant timestamp
 ) {
+
+    public record FieldError(String field, String message) {}
+
 }

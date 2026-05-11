@@ -1,9 +1,9 @@
 package com.laporeon.urlshortener.services;
 
-import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
-import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
+import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
+import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.entities.Url;
-import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
 import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;
@@ -27,7 +27,7 @@ public class UrlService {
     private final BaseUrlGenerator baseUrlGenerator;
 
     @Transactional
-    public UrlResponseDTO shortenUrl(UrlRequestDTO dto, HttpServletRequest request) {
+    public ShortenUrlResponse shortenUrl(ShortenUrlRequest dto, HttpServletRequest request) {
         String shortCode;
         do {
             shortCode = codeGenerator.generateShortCode();
@@ -35,11 +35,7 @@ public class UrlService {
 
         Instant expiresAt = dateGenerator.generateExpiresAt(dto.expirationDate());
 
-        Url url = Url.builder()
-                     .shortCode(shortCode)
-                     .originalUrl(dto.originalUrl())
-                     .expiresAt(expiresAt)
-                     .build();
+        Url url = Url.create(dto.originalUrl(), shortCode, expiresAt);
 
         urlRepository.save(url);
 
@@ -47,7 +43,7 @@ public class UrlService {
 
         String baseURL = baseUrlGenerator.generateBaseUrl(request);
 
-        return new UrlResponseDTO(
+        return new ShortenUrlResponse(
                 baseURL + "/" + url.getShortCode(),
                 url.getExpiresAt()
         );

@@ -1,4 +1,4 @@
-version: '3.9'
+name: url-shortener
 
 services:
   app:
@@ -21,6 +21,7 @@ services:
       MONGO_USER: ${MONGO_USER:-admin}
       MONGO_PASSWORD: ${MONGO_PASSWORD:-dbpassword}
       MONGO_DATABASE: ${MONGO_DATABASE:-urlshortenerdb}
+      ALLOWED_ORIGINS: *
     restart: unless-stopped
 
   mongodb:

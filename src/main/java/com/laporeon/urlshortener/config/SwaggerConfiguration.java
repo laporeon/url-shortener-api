@@ -5,8 +5,10 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("!prod")
 public class SwaggerConfiguration {
 
     @Bean
@@ -29,9 +31,6 @@ public class SwaggerConfiguration {
                                             2. Receive a shortened URL with a unique code
                                             3. Share the short URL. If not expired, it will automatically redirect to the original
                                             4. Links expire automatically after the expiration date and can no longer be accessed
-                                            
-                                            ## Quick Start
-                                            Use `POST /shorten` to create a shortened URL, then access it via `GET /{shortCode}`.
                                             """
                                 )
                                 .version("1.0.0")

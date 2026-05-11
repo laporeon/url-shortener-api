@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
 
-public record UrlRequestDTO(
+public record ShortenUrlRequest(
         @Pattern(
                 regexp = "https?://([\\w-]+\\.)+[\\w-]+(:\\d+)?(/\\S*)?",
                 message = "Invalid URL format. Please provide a valid URL (e.g., https://example.com)."
