@@ -3,6 +3,7 @@ package com.laporeon.urlshortener.exceptions;
 import com.laporeon.urlshortener.dtos.response.ErrorResponse;
 import com.laporeon.urlshortener.dtos.response.ValidationErrorResponse;
 import com.laporeon.urlshortener.dtos.response.ValidationErrorResponse.FieldError;
+import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,10 +29,10 @@ public class GlobalExceptionHandler {
                  ex.getBindingResult().getErrorCount());
 
         List<FieldError> errors = ex.getBindingResult()
-                                                                  .getFieldErrors()
-                                                                  .stream()
-                                                                  .map(err -> new FieldError(err.getField(), err.getDefaultMessage()))
-                                                                  .toList();
+                                    .getFieldErrors()
+                                    .stream()
+                                    .map(err -> new FieldError(err.getField(), err.getDefaultMessage()))
+                                    .toList();
 
 
         ValidationErrorResponse error = new ValidationErrorResponse(
