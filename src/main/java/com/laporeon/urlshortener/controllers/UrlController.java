@@ -1,18 +1,12 @@
 package com.laporeon.urlshortener.controllers;
 
-import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
-import com.laporeon.urlshortener.dtos.response.ApiMetadataDTO;
-import com.laporeon.urlshortener.dtos.response.ErrorResponseDTO;
-import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
-import com.laporeon.urlshortener.dtos.response.ValidationErrorResponseDTO;
+import com.laporeon.urlshortener.controllers.docs.RedirectDocumentation;
+import com.laporeon.urlshortener.controllers.docs.ShortenUrlDocumentation;
+import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
+import com.laporeon.urlshortener.dtos.response.ApiMetadata;
+import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.services.UrlService;
-import com.laporeon.urlshortener.utils.SwaggerExamples;
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,7 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.time.Instant;
@@ -35,61 +34,15 @@ public class UrlController {
 
     private final UrlService urlService;
 
-    @Operation(
-            summary = "Shorten a URL",
-            description = "Receives a long URL and an optional expiration date. Returns a shortened URL.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Request payload",
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = UrlRequestDTO.class),
-                            examples = @ExampleObject(value = SwaggerExamples.CREATE_SHORT_URL_REQUEST)
-                    )
-            ),
-            responses = {
-                    @ApiResponse(responseCode = "201", description = "Successfully Shorten URL",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = UrlResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerExamples.SHORTEN_URL_SUCCESS_RESPONSE))),
-                    @ApiResponse(responseCode = "400", description = "Request validation failed",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ValidationErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerExamples.VALIDATION_ERROR_RESPONSE))),
-                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerExamples.INTERNAL_ERROR_RESPONSE)))
-            }
-    )
+    @ShortenUrlDocumentation
     @PostMapping("/shorten")
-    public ResponseEntity<UrlResponseDTO> shortenUrl(@Valid @RequestBody UrlRequestDTO dto, HttpServletRequest request) {
-        UrlResponseDTO urlResponseDTO = urlService.shortenUrl(dto, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(urlResponseDTO);
+    public ResponseEntity<ShortenUrlResponse> shortenUrl(@Valid @RequestBody ShortenUrlRequest dto, HttpServletRequest request) {
+        ShortenUrlResponse shortenUrlResponse = urlService.shortenUrl(dto, request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(shortenUrlResponse);
     }
 
-    @Operation(
-            summary = "Redirect to original URL.",
-            description = "Receives a short code and redirects to the original URL if found and not expired.\n\n" +
-                    "**Note:** This endpoint will not work properly in Swagger UI due to CORS limitations with redirects. " +
-                    "Please test directly in your browser or using your preferred REST Client.",
-            responses = {
-                    @ApiResponse(responseCode = "302", description = "Short code found"),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerExamples.NOT_FOUND_ERROR_RESPONSE))),
-                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponseDTO.class),
-                                    examples = @ExampleObject(value = SwaggerExamples.INTERNAL_ERROR_RESPONSE)))
-            }
-    )
+
+    @RedirectDocumentation
     @GetMapping("/{shortCode:[A-Za-z0-9]{7}}")
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") String shortCode) {
         String originalUrl = urlService.findByShortCode(shortCode).getOriginalUrl();
@@ -106,8 +59,8 @@ public class UrlController {
      */
     @Hidden
     @GetMapping("/")
-    public ResponseEntity<ApiMetadataDTO> getApiMetadata() {
-         ApiMetadataDTO response = new ApiMetadataDTO(
+    public ResponseEntity<ApiMetadata> getApiMetadata() {
+         ApiMetadata response = new ApiMetadata(
                 "URL Shortener API",
                 "1.0.0",
                 "operational",
