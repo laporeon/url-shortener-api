@@ -1,8 +1,8 @@
-package com.laporeon.urlshortener.utils;
+package com.laporeon.urlshortener.controllers.docs;
 
-public class SwaggerExamples {
+public class SwaggerDocsConstants {
 
-    public static final String CREATE_SHORT_URL_REQUEST = """
+    public static final String SHORTEN_URL_REQUEST = """
             {
                 "originalUrl": "https://www.google.com/",
                 "expirationDate": "2025-10-29"
