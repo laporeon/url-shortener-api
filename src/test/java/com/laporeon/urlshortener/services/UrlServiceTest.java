@@ -1,7 +1,7 @@
 package com.laporeon.urlshortener.services;
 
-import com.laporeon.urlshortener.dtos.request.UrlRequestDTO;
-import com.laporeon.urlshortener.dtos.response.UrlResponseDTO;
+import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
+import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.entities.Url;
 import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
@@ -25,7 +25,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UrlService Tests")
@@ -44,7 +47,7 @@ public class UrlServiceTest {
     private BaseUrlGenerator baseUrlGenerator;
 
     @Mock
-    private HttpServletRequest request;
+    private HttpServletRequest httpRequest;
 
     @InjectMocks
     private UrlService urlService;
@@ -52,43 +55,36 @@ public class UrlServiceTest {
     private static final String VALID_SHORT_CODE = "a1b2c3d";
     private static final String VALID_URL = "https://www.youtube.com";
     private static final LocalDate VALID_EXPIRATION_DATE = LocalDate.now().plusDays(5);
+    private static final Instant VALID_EXPIRES_AT = Instant.now().plus(5, ChronoUnit.DAYS);
+    private static final Instant DEFAULT_EXPIRES_AT = Instant.now().plus(1, ChronoUnit.DAYS);
     private static final String BASE_URL = "http://localhost:8080";
 
-    private Instant expiresAt;
     private Url mockedUrlEntity;
 
     @BeforeEach
     void setUp() {
-        expiresAt = Instant.now().plus(5, ChronoUnit.DAYS);
-
-        mockedUrlEntity = Url.builder()
-                       .id("67f81446994a2cef3456c9b5")
-                       .shortCode(VALID_SHORT_CODE)
-                       .originalUrl(VALID_URL)
-                       .expiresAt(expiresAt)
-                       .createdAt(Instant.now())
-                       .build();
+        mockedUrlEntity = Url.create(BASE_URL, VALID_SHORT_CODE, VALID_EXPIRES_AT);
     }
 
     @Test
     @DisplayName("Should create shortened URL with generated code and expiration")
     void shouldCreateShortenedUrlWithGeneratedCodeAndExpiration() {
-        UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, VALID_EXPIRATION_DATE);
+        ShortenUrlRequest requestDTO = new ShortenUrlRequest(VALID_URL, VALID_EXPIRATION_DATE);
 
-        when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(expiresAt);
+        when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(VALID_EXPIRES_AT);
         when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
         when(urlRepository.save(any(Url.class))).thenReturn(mockedUrlEntity);
         when(baseUrlGenerator.generateBaseUrl(any())).thenReturn(BASE_URL);
 
-        UrlResponseDTO response = urlService.shortenUrl(requestDTO, request);
+        ShortenUrlResponse response = urlService.shortenUrl(requestDTO, httpRequest);
 
         assertThat(response.shortUrl()).isEqualTo(BASE_URL + "/" + VALID_SHORT_CODE);
         assertThat(response.expiresAt().isAfter(Instant.now()));
 
         verify(dateGenerator, times(1)).generateExpiresAt(eq(VALID_EXPIRATION_DATE));
         verify(codeGenerator, times(1)).generateShortCode();
-        verify(baseUrlGenerator, times(1)).generateBaseUrl(request);
+        verify(baseUrlGenerator, times(1)).generateBaseUrl(httpRequest);
         verify(urlRepository, times(1)).existsByShortCode(VALID_SHORT_CODE);
         verify(urlRepository, times(1)).save(any(Url.class));
     }
@@ -96,31 +92,24 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Should use default expiration when date is null")
     void shouldUseDefaultExpirationWhenDateIsNull() {
-        UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, null);
-        Instant defaultExpirationDate = Instant.now().plus(24, ChronoUnit.HOURS);
+        ShortenUrlRequest requestDTO = new ShortenUrlRequest(VALID_URL, null);
 
-        Url urlWithDefaultExpiration = Url.builder()
-                                          .id("67f81446994a2cef3456c9b5")
-                                          .shortCode(VALID_SHORT_CODE)
-                                          .originalUrl(VALID_URL)
-                                          .expiresAt(defaultExpirationDate)
-                                          .createdAt(Instant.now())
-                                          .build();
+        Url urlWithDefaultExpiration = Url.create(BASE_URL, VALID_SHORT_CODE, DEFAULT_EXPIRES_AT);
 
-        when(dateGenerator.generateExpiresAt(eq(null))).thenReturn(defaultExpirationDate);
+        when(dateGenerator.generateExpiresAt(eq(null))).thenReturn(DEFAULT_EXPIRES_AT);
         when(codeGenerator.generateShortCode()).thenReturn(VALID_SHORT_CODE);
         when(urlRepository.existsByShortCode(VALID_SHORT_CODE)).thenReturn(false);
         when(urlRepository.save(any(Url.class))).thenReturn(urlWithDefaultExpiration);
         when(baseUrlGenerator.generateBaseUrl(any())).thenReturn(BASE_URL);
 
-        UrlResponseDTO response = urlService.shortenUrl(requestDTO, request);
+        ShortenUrlResponse response = urlService.shortenUrl(requestDTO, httpRequest);
 
         assertThat(response.shortUrl()).isEqualTo(BASE_URL + "/" + VALID_SHORT_CODE);
-        assertThat(response.expiresAt()).isEqualTo(defaultExpirationDate);
+        assertThat(response.expiresAt()).isEqualTo(DEFAULT_EXPIRES_AT);
 
         verify(dateGenerator, times(1)).generateExpiresAt(null);
         verify(codeGenerator, times(1)).generateShortCode();
-        verify(baseUrlGenerator, times(1)).generateBaseUrl(request);
+        verify(baseUrlGenerator, times(1)).generateBaseUrl(httpRequest);
         verify(urlRepository, times(1)).existsByShortCode(VALID_SHORT_CODE);
         verify(urlRepository, times(1)).save(any(Url.class));
     }
@@ -128,18 +117,12 @@ public class UrlServiceTest {
     @Test
     @DisplayName("Should generate new code when duplicate detected")
     void shouldGenerateNewCodeWhenDuplicateDetected() {
-        UrlRequestDTO requestDTO = new UrlRequestDTO(VALID_URL, VALID_EXPIRATION_DATE);
+        ShortenUrlRequest requestDTO = new ShortenUrlRequest(VALID_URL, VALID_EXPIRATION_DATE);
         String newValidShortCode = "f1g2h3";
 
-        Url savedUrlEntity = Url.builder()
-                                .id("67f81446994a2cef3456c9b5")
-                                .shortCode(newValidShortCode)
-                                .originalUrl(VALID_URL)
-                                .expiresAt(expiresAt)
-                                .createdAt(Instant.now())
-                                .build();
+        Url savedUrlEntity =  Url.create(BASE_URL, newValidShortCode, DEFAULT_EXPIRES_AT);
 
-        when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(expiresAt);
+        when(dateGenerator.generateExpiresAt(eq(VALID_EXPIRATION_DATE))).thenReturn(VALID_EXPIRES_AT);
         when(codeGenerator.generateShortCode())
                 .thenReturn(VALID_SHORT_CODE)
                 .thenReturn(newValidShortCode);
@@ -148,14 +131,14 @@ public class UrlServiceTest {
         when(urlRepository.save(any(Url.class))).thenReturn(savedUrlEntity);
         when(baseUrlGenerator.generateBaseUrl(any())).thenReturn(BASE_URL);
 
-        UrlResponseDTO response = urlService.shortenUrl(requestDTO, request);
+        ShortenUrlResponse response = urlService.shortenUrl(requestDTO, httpRequest);
 
         assertThat(response.shortUrl()).isEqualTo(BASE_URL + "/" + newValidShortCode);
         assertThat(response.expiresAt()).isAfter(Instant.now());
 
         verify(dateGenerator, times(1)).generateExpiresAt(eq(VALID_EXPIRATION_DATE));
         verify(codeGenerator, times(2)).generateShortCode();
-        verify(baseUrlGenerator, times(1)).generateBaseUrl(request);
+        verify(baseUrlGenerator, times(1)).generateBaseUrl(httpRequest);
         verify(urlRepository, times(2)).existsByShortCode(any());
         verify(urlRepository, times(1)).save(any(Url.class));
     }
