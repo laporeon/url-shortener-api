@@ -3,7 +3,7 @@ package com.laporeon.urlshortener.services;
 import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
 import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.entities.Url;
-import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.repositories.UrlRepository;
 import com.laporeon.urlshortener.utils.BaseUrlGenerator;
 import com.laporeon.urlshortener.utils.ExpirationDateGenerator;

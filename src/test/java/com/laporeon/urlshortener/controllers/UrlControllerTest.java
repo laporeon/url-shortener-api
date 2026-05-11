@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
 import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.entities.Url;
-import com.laporeon.urlshortener.exceptions.ShortCodeNotFoundException;
+import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.services.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
