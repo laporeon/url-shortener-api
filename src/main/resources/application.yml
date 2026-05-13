@@ -1,22 +1,41 @@
 # ====== APPLICATION =====
-server.port=${PORT:8080}
-spring.application.name=url-shortener-api
-spring.profiles.active=${SPRING_PROFILES_ACTIVE:dev}
+server:
+  port: ${PORT:8080}
 
+spring:
+  application:
+  name: url-shortener-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 # ====== DATABASE ======
-spring.mongodb.auto-index-creation=true
-spring.mongodb.authentication-database=admin
+  mongodb:
+    auto-index-creation: true
+    authentication-database: admin
 
 # ====== SWAGGER ======
-springdoc.swagger-ui.path=/docs
-springdoc.api-docs.path=/api-docs
+springdoc:
+  swagger-ui:
+    path: /docs
+  api-docs:
+    path: /api-docs
 
 # ====== LOGGING ======
-logging.level.org.mongodb.driver=INFO
-logging.level.com.laporeon=INFO
+logging:
+  level:
+    org:
+      mongodb:
+        driver: INFO
+    com:
+      laporeon: INFO
 
 # ====== ACTUATOR ======
-management.endpoints.web.exposure.include=health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
 
 # ====== CORS ======
-app.cors.allowed-origins=${ALLOWED_ORIGINS}
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS}
