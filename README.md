@@ -99,15 +99,15 @@ mvn spring-boot:run
 > - `dev` profile uses individual MongoDB credentials
 > - `prod` profile expects a full MongoDB connection URI
 
-| Variable               | Docker                               | Local                    | Production               | Description            |
-|------------------------|--------------------------------------|-------------------------------------|--------------------------|------------------------|
-| PORT                   | Optional (Default: "8080")           | Optional (Default: "8080")          | Auto-set by platform     | Server port            |
-| SPRING_PROFILES_ACTIVE | Default: "dev"                       | Optional (Default: "dev")           | **Required** (set to "prod") | Active Spring profile  |
-| MONGO_USER             | Optional (Default: "admin")          | **Required**                        | —                        | MongoDB username       |
-| MONGO_PASSWORD         | Optional (Default: "dbpassword")     | **Required**                        | —                        | MongoDB password       |
+| Variable               | Docker                               | Local                                | Production               | Description            |
+|------------------------|--------------------------------------|--------------------------------------|--------------------------|------------------------|
+| PORT                   | Optional (Default: "8080")           | Optional (Default: "8080")           | Auto-set by platform     | Server port            |
+| SPRING_PROFILES_ACTIVE | Default: "dev"                       | Optional (Default: "dev")            | **Required** (set to "prod") | Active Spring profile  |
+| MONGO_USER             | Optional (Default: "admin")          | **Required**                         | —                        | MongoDB username       |
+| MONGO_PASSWORD         | Optional (Default: "dbpassword")     | **Required**                         | —                        | MongoDB password       |
 | MONGO_DATABASE         | Optional (Default: "urlshortenerdb") | Optional (Default: "urlshortenerdb") | —                        | MongoDB database name  |
-| MONGO_URI              | —                                    | —                                   | **Required**             | MongoDB connection URI |
-| ALLOWED_ORIGINS        | Optional (Fallback: "*")              | Optional (Default: "*")                        | **Required**             |  Comma-separated allowed frontend origins |
+| MONGO_URI              | —                                    | —                                    | **Required**             | MongoDB connection URI |
+| ALLOWED_ORIGINS        | Optional (Default: "*")              | Optional (Fallback: "*")             | **Required**             |  Comma-separated allowed frontend origins |
 
 ## Usage
 
