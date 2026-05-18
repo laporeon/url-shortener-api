@@ -1,4 +1,4 @@
-package com.laporeon.urlshortener.utils;
+package com.laporeon.urlshortener.helpers;
 
 import org.springframework.stereotype.Component;
 

@@ -1,0 +1,33 @@
+# ====== DATABASE =====
+spring:
+  mongodb:
+    uri: ${MONGO_URI}
+
+# ====== LOGGING ======
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core: WARN
+      mongodb:
+        driver: WARN
+    com:
+      laporeon: INFO
+
+# ====== ACTUATOR ======
+management:
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+      probes:
+        enabled: true
+
+# ====== SWAGGER ======
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false

@@ -1,0 +1,35 @@
+# ====== ENVIRONMENT =====
+spring:
+  config:
+    import: optional:file:.env[.properties]
+# ====== DATABASE ======
+  mongodb:
+    host: ${MONGO_HOST:localhost}
+    port: ${MONGO_PORT:27017}
+    database: ${MONGO_DATABASE:urlshortenerdb}
+    username: ${MONGO_USER}
+    password: ${MONGO_PASSWORD}
+
+# ====== LOGGING ======
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core: DEBUG
+      mongodb:
+        driver: DEBUG
+    com:
+      laporeon: DEBUG
+
+# ====== ACTUATOR ======
+management:
+  endpoint:
+    health:
+      show-details: always
+
+# ====== CORS ======
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:*}
