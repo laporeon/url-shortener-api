@@ -154,7 +154,6 @@ public class ShortUrlServiceTest {
         verify(urlRepository, times(1)).findByShortCode(VALID_SHORT_CODE);
     }
 
-
     @Test
     @DisplayName("Should throw exception for invalid short code")
     void shouldThrowExceptionForInvalidShortCode() {
