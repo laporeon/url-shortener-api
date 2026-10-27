@@ -8,7 +8,6 @@ import java.time.temporal.ChronoUnit;
 
 @Component
 public class ExpirationDateGenerator {
-
     public Instant generateExpiresAt(LocalDate expirationDate) {
 
         if (expirationDate != null) {

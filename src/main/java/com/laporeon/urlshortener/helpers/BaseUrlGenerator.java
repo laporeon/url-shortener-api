@@ -6,7 +6,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Component
 public class BaseUrlGenerator {
-
     public String generateBaseUrl(HttpServletRequest request) {
         return ServletUriComponentsBuilder
                 .fromRequestUri(request)

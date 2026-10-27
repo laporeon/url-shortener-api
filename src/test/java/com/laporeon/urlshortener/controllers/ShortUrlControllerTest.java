@@ -3,9 +3,9 @@ package com.laporeon.urlshortener.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
 import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
-import com.laporeon.urlshortener.entities.Url;
+import com.laporeon.urlshortener.entities.ShortUrl;
 import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
-import com.laporeon.urlshortener.services.UrlService;
+import com.laporeon.urlshortener.services.ShortUrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,10 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UrlController.class)
-@DisplayName("UrlController Tests")
-public class UrlControllerTest {
-
+@WebMvcTest(ShortUrlController.class)
+@DisplayName("ShortUrlController Tests")
+public class ShortUrlControllerTest {
     private static final String VALID_SHORT_CODE = "a1b2c3d";
     private static final String VALID_ORIGINAL_URL = "https://www.youtube.com/";
     private static final Instant VALID_EXPIRES_AT = Instant.now().plus(5, ChronoUnit.DAYS);
@@ -44,7 +43,7 @@ public class UrlControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private UrlService urlService;
+    private ShortUrlService urlService;
 
     private ShortenUrlResponse mockedShortenUrlResponse;
 
@@ -108,7 +107,7 @@ public class UrlControllerTest {
     @Test
     @DisplayName("GET /{shortCode} - Should return 302 when given existing short code")
     void shouldReturn302WhenGivenExistingShortCode() throws Exception {
-        Url mockedUrl = Url.create(VALID_ORIGINAL_URL, VALID_SHORT_CODE, VALID_EXPIRES_AT);
+        ShortUrl mockedUrl = ShortUrl.create(VALID_ORIGINAL_URL, VALID_SHORT_CODE, VALID_EXPIRES_AT);
 
         when(urlService.findByShortCode(VALID_SHORT_CODE)).thenReturn(mockedUrl);
 

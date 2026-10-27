@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UrlRepository extends MongoRepository<ShortUrl, String> {
+public interface ShortUrlRepository extends MongoRepository<ShortUrl, String> {
     Boolean existsByShortCode(String shortCode);
 
     Optional<ShortUrl> findByShortCode(String shortCode);

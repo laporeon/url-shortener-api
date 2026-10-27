@@ -14,7 +14,7 @@ import java.time.Instant;
 @Document(collection = "short_urls")
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class Url {
+public class ShortUrl {
     @MongoId
     private String id;
 
@@ -33,12 +33,12 @@ public class Url {
     @Field(name = "created_at")
     private Instant createdAt;
 
-    public static Url create(String originalUrl, String shortCode, Instant expiresAt) {
-        return Url.builder()
-                      .shortCode(shortCode)
-                      .originalUrl(originalUrl)
-                      .expiresAt(expiresAt)
-                      .createdAt(Instant.now())
-                      .build();
+    public static ShortUrl create(String originalUrl, String shortCode, Instant expiresAt) {
+        return ShortUrl.builder()
+                       .shortCode(shortCode)
+                       .originalUrl(originalUrl)
+                       .expiresAt(expiresAt)
+                       .createdAt(Instant.now())
+                       .build();
     }
 }

@@ -7,7 +7,7 @@ import com.laporeon.urlshortener.exceptions.custom.ShortCodeNotFoundException;
 import com.laporeon.urlshortener.helpers.BaseUrlGenerator;
 import com.laporeon.urlshortener.helpers.ExpirationDateGenerator;
 import com.laporeon.urlshortener.helpers.ShortCodeGenerator;
-import com.laporeon.urlshortener.repositories.UrlRepository;
+import com.laporeon.urlshortener.repositories.ShortUrlRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,8 @@ import java.time.Instant;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UrlService {
-    private final UrlRepository urlRepository;
+public class ShortUrlService {
+    private final ShortUrlRepository shortUrlRepository;
     private final ShortCodeGenerator codeGenerator;
     private final ExpirationDateGenerator dateGenerator;
     private final BaseUrlGenerator baseUrlGenerator;
@@ -30,13 +30,13 @@ public class UrlService {
         String shortCode;
         do {
             shortCode = codeGenerator.generateShortCode();
-        } while(urlRepository.existsByShortCode(shortCode));
+        } while(shortUrlRepository.existsByShortCode(shortCode));
 
         Instant expiresAt = dateGenerator.generateExpiresAt(dto.expirationDate());
 
         ShortUrl shortUrl = ShortUrl.create(dto.originalUrl(), shortCode, expiresAt);
 
-        urlRepository.save(shortUrl);
+        shortUrlRepository.save(shortUrl);
 
         log.info("Short code '{}' generated for URL {} at {}", shortCode, shortUrl.getOriginalUrl(), Instant.now());
 
@@ -49,6 +49,6 @@ public class UrlService {
     }
 
     public ShortUrl findByShortCode(String shortCode) {
-        return urlRepository.findByShortCode(shortCode).orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
+        return shortUrlRepository.findByShortCode(shortCode).orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
     }
 }
