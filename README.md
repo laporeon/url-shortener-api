@@ -105,7 +105,7 @@ mvn spring-boot:run
 | SPRING_PROFILES_ACTIVE | Default: "dev"                       | Optional (Default: "dev")            | **Required** (set to "prod") | Active Spring profile  |
 | MONGO_USER             | Optional (Default: "admin")          | **Required**                         | —                        | MongoDB username       |
 | MONGO_PASSWORD         | Optional (Default: "dbpassword")     | **Required**                         | —                        | MongoDB password       |
-| MONGO_DATABASE         | Optional (Default: "urlshortenerdb") | Optional (Default: "urlshortenerdb") | —                        | MongoDB database name  |
+| MONGO_DATABASE         | Optional (Default: "url_shortener_db") | Optional (Default: "urlshortenerdb") | —                        | MongoDB database name  |
 | MONGO_URI              | —                                    | —                                    | **Required**             | MongoDB connection URI |
 | ALLOWED_ORIGINS        | Optional (Default: "*")              | Optional (Fallback: "*")             | **Required**             |  Comma-separated allowed frontend origins |
 
@@ -117,7 +117,6 @@ Once the application is running, you can interact via Swagger UI at `/docs` in n
 
 | Route      | HTTP Method | Params                                                          | Description                            | Auth Method |
 |------------|-------------|-----------------------------------------------------------------|----------------------------------------|-------------|
-| `/`        | GET         | -                                                               | API metadata                           | None        |
 | `/docs`    | GET         | -                                                               | Swagger documentation                  | None        |
 | `/shorten` | POST        | Body with `originalUrl` and _optional_ `expirationDate` | Create a short URL from a long URL     | None        |
 | `/{shortCode}` | GET         | **Path Parameters:** `shortCode`                                              | Redirects to the original URL if valid | None        |

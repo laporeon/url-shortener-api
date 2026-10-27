@@ -3,10 +3,8 @@ package com.laporeon.urlshortener.controllers;
 import com.laporeon.urlshortener.controllers.docs.RedirectDocumentation;
 import com.laporeon.urlshortener.controllers.docs.ShortenUrlDocumentation;
 import com.laporeon.urlshortener.dtos.request.ShortenUrlRequest;
-import com.laporeon.urlshortener.dtos.response.ApiMetadata;
 import com.laporeon.urlshortener.dtos.response.ShortenUrlResponse;
 import com.laporeon.urlshortener.services.ShortUrlService;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.time.Instant;
-import java.util.Map;
 
 @Tag(name = "Short URL")
 @Slf4j
@@ -47,24 +43,5 @@ public class ShortUrlController {
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl)).build();
 
-    }
-
-    /**
-     * Returns metadata information about the API.
-     * This endpoint is hidden from Swagger docs to avoid cluttering the API documentation.
-     */
-    @Hidden
-    @GetMapping("/")
-    public ResponseEntity<ApiMetadata> getApiMetadata() {
-         ApiMetadata response = new ApiMetadata(
-                "URL Shortener API",
-                "1.0.0",
-                "operational",
-                Instant.now(),
-                Map.of("shorten", "POST /shorten",
-                       "redirect", "GET /{shortCode}"),
-                "https://github.com/laporeon/url-shortener-api/blob/main/README.md");
-
-         return ResponseEntity.ok(response);
     }
 }
