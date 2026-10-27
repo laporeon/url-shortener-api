@@ -1,7 +1,7 @@
 <h1 align="center"> URL Shortener API
 
 ![java](https://img.shields.io/static/v1?label=java&message=21.0.8&color=2d3748&logo=openjdk&style=flat-square)
-![spring boot](https://img.shields.io/static/v1?label=spring%20boot&message=4.0.6&color=2d3748&logo=springboot&style=flat-square)
+![spring boot](https://img.shields.io/static/v1?label=spring%20boot&message=4.1.2&color=2d3748&logo=springboot&style=flat-square)
 ![mongodb](https://img.shields.io/badge/mongodb-8.0.17-4b32c3?style=flat-square&logo=mongodb&color=2d3748)
 ![docker](https://img.shields.io/static/v1?label=docker&message=29.4.3&color=2d3748&logo=docker&style=flat-square)
 ![swagger](https://img.shields.io/static/v1?label=swagger&message=3.0.3&color=2d3748&logo=swagger&style=flat-square)
@@ -13,107 +13,107 @@
 - [About](#about)
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
-    - [Running with Docker (Recommended)](#running-with-docker-recommended)
-    - [Running Locally (Without Docker)](#running-locally-without-docker)
-    - [Environment Variables Reference](#environment-variables-reference)
+  - [Quick Start](#quick-start) 
+  - [Environment Variables Reference](#environment-variables-reference)
 - [Usage](#usage)
     - [Routes](#routes)
         - [Requests](#requests)
 
 ## About
 
-A production-ready URL shortening REST API built with Spring Boot and MongoDB. Convert long URLs into short, memorable
-links with optional expiration dates. Features include automatic redirection, comprehensive validation, and Swagger
-documentation.
+This project provides a simple REST API for creating and resolving shortened URLs.
+
+The application uses MongoDB to persist shortened URLs and supports optional expiration dates. Expired URLs are rejected by the application, while MongoDB's TTL index asynchronously removes expired documents.
 
 **Key features:**
 
-- Input validation for URL and expiration date.
-- Generates the base URL dynamically from the incoming HTTP request.
-- Automatic URL expiration via MongoDB TTL index.
+- URL format and optional expiration date validation.
+- Dynamically generated base URL based on the incoming HTTP request.
+- MongoDB TTL index for asynchronous cleanup of expired URLs.
 - Unique short code constraint at database level.
 - Redirect endpoint with proper not-found/expired handling.
-- Environment profiles support (`dev` and `prod`).
-- Swagger/OpenAPI available in non-production profile.
-- Production-safe CORS configuration via environment variable.
-- Health check endpoint via Spring Boot Actuator (`/actuator/health`).
+- Environment profiles for development and production.
+- Swagger/OpenAPI documentation in non-production profiles.
+- Configurable CORS through environment variables.
+- Health check endpoint through Spring Boot Actuator.
 
 ## Requirements:
 
 **For Docker (Recommended):**
 
 - Docker & Docker Compose
+- Make _(optional)_
 
 **For Local Development:**
 
 - Java 21+
-- Maven 3.9+
 - MongoDB 8+
+- Make _(optional)_
+
+> [!NOTE]
+> - The project ships with the Maven Wrapper (`./mvnw`), so a global Maven installation is not required.
 
 ## Getting Started
 
-### Running with Docker (Recommended)
+The development workflow is powered by the Makefile. Run `make help` to list all available commands.
 
-This is the simplest setup. Docker Compose will automatically build and start all required services, using default values in the [Compose file](./docker-compose.yml).
+> [!NOTE]
+> `make` is available out of the box on Linux and macOS. On Windows, use [WSL](https://learn.microsoft.com/windows/wsl/),
+> or run the equivalent commands from the table below (use `mvnw.cmd` instead of `./mvnw`).
+
+| Command | Description | Equivalent without Make |
+|---|---|---|
+| `make env` | Create `.env` from `.env.example` if it does not exist | `cp .env.example .env` |
+| `make run` | Run the application locally without Docker | `./mvnw spring-boot:run` |
+| `make test` | Run the test suite | `./mvnw test` |
+| `make test TEST=ShortUrlServiceTest` | Run a specific test class | `./mvnw test -Dtest=ShortUrlServiceTest` |
+| `make build` | Package the application without running tests | `./mvnw clean package -DskipTests` |
+| `make dev` | Create `.env` if missing, then build and start the containers in the background | `docker compose up -d --build` |
+| `make down` | Stop and remove the containers | `docker compose down` |
+| `make logs` | Follow the container logs | `docker compose logs -f` |
+
+### Quick Start
+
+**Docker**
 
 ```bash
-docker compose up -d --build
+make env # Create the local environment file if it does not exist.
+make dev # Build and start the application and MongoDB containers
 ```
 
-Then access the application at `http://localhost:8080/` (or the port you configured).
+**Local Development**
 
-**Optionally**, you can override any environment variables with your own settings.
 ```bash
-cp .env.example .env
-# Edit .env with your local values
+make env # Create the local environment file if it does not exist.
+make run # Start the application.
 ```
 
-### Running Locally (Without Docker)
-
-1. Set the required environment variables using **either** method below:
-    - **Option 1: Using `.env` file**. Copy the example file and edit with your values:
-      ```bash
-      cp .env.example .env
-      # Edit .env with your local settings
-      ```
-
-    - **Option 2: Exporting via shell**
-      ```bash
-      export MONGO_USER=<your-mongodb-user-here>
-      export MONGO_PASSWORD=<your-mongodb-password-here>
-      export MONGO_DATABASE=<database-name>
-      export ALLOWED_ORIGINS=http://localhost:5173,https://your-frontend-url.com # optional
-      export PORT=8081 # optional
-      ```
-
-2. Start the application:
-```bash
-mvn spring-boot:run
-```
-3. Access at `http://localhost:8080/` (or the port you configured).
+The application will be available at `http://localhost:8080` (or the port you configured).
 
 ### Environment Variables Reference
 
-> [!NOTE]
-> The application loads MongoDB credentials based on the active Spring profile:
-> - `dev` profile uses individual MongoDB credentials
-> - `prod` profile expects a full MongoDB connection URI
+The application loads MongoDB credentials based on the active Spring profile:
+- `dev` profile uses individual MongoDB credentials
+- `prod` profile expects a full MongoDB connection URI
 
 | Variable               | Docker                               | Local                                | Production               | Description            |
 |------------------------|--------------------------------------|--------------------------------------|--------------------------|------------------------|
 | PORT                   | Optional (Default: "8080")           | Optional (Default: "8080")           | Auto-set by platform     | Server port            |
-| SPRING_PROFILES_ACTIVE | Default: "dev"                       | Optional (Default: "dev")            | **Required** (set to "prod") | Active Spring profile  |
+| SPRING_PROFILES_ACTIVE | Default: "dev"                       | Optional (Default: "dev")            | **Required**, set to "prod" | Active Spring profile  |
 | MONGO_USER             | Optional (Default: "admin")          | **Required**                         | —                        | MongoDB username       |
 | MONGO_PASSWORD         | Optional (Default: "dbpassword")     | **Required**                         | —                        | MongoDB password       |
-| MONGO_DATABASE         | Optional (Default: "url_shortener_db") | Optional (Default: "urlshortenerdb") | —                        | MongoDB database name  |
+| MONGO_DATABASE         | Optional (Default: "url_shortener_db") | Optional (Default: "url_shortener_db") | —                        | MongoDB database name  |
 | MONGO_URI              | —                                    | —                                    | **Required**             | MongoDB connection URI |
 | ALLOWED_ORIGINS        | Optional (Default: "*")              | Optional (Fallback: "*")             | **Required**             |  Comma-separated allowed frontend origins |
 
+> [!WARNING]
+> Do not use `ALLOWED_ORIGINS=*` in production. Configure explicit frontend origins instead.
+
 ## Usage
 
-Once the application is running, you can interact via Swagger UI at `/docs` in non-production profile or directly through HTTP requests.
+Once the application is running, you can interact with it through Swagger UI at `/docs` in non-production profiles or directly through HTTP requests.
 
-### **Routes**
+### Routes
 
 | Route      | HTTP Method | Params                                                          | Description                            | Auth Method |
 |------------|-------------|-----------------------------------------------------------------|----------------------------------------|-------------|
