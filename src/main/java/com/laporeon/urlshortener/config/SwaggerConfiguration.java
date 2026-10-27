@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("!prod")
 public class SwaggerConfiguration {
-
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
@@ -42,5 +41,4 @@ public class SwaggerConfiguration {
                 );
 
     }
-
 }

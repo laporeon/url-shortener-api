@@ -1,7 +1,6 @@
 package com.laporeon.urlshortener.controllers.docs;
 
 public class SwaggerDocsConstants {
-
     public static final String SHORTEN_URL_REQUEST = """
             {
                 "originalUrl": "https://www.google.com/",

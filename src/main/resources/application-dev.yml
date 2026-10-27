@@ -6,7 +6,7 @@ spring:
   mongodb:
     host: ${MONGO_HOST:localhost}
     port: ${MONGO_PORT:27017}
-    database: ${MONGO_DATABASE:urlshortenerdb}
+    database: ${MONGO_DATABASE:url_shortener_db}
     username: ${MONGO_USER}
     password: ${MONGO_PASSWORD}
 

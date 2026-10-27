@@ -11,16 +11,15 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
 
-@Document(collection = "urls")
+@Document(collection = "short_urls")
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
-public class Url {
-
+public class ShortUrl {
     @MongoId
     private String id;
 
     @Field(name = "short_code")
-    @Indexed(unique = true, name = "idx_url_short_code")
+    @Indexed(unique = true, name = "idx_short_urls_short_code")
     private String shortCode;
 
     @Field(name = "original_url")
@@ -34,13 +33,12 @@ public class Url {
     @Field(name = "created_at")
     private Instant createdAt;
 
-    public static Url create(String originalUrl, String shortCode, Instant expiresAt) {
-        return Url.builder()
-                      .shortCode(shortCode)
-                      .originalUrl(originalUrl)
-                      .expiresAt(expiresAt)
-                      .createdAt(Instant.now())
-                      .build();
+    public static ShortUrl create(String originalUrl, String shortCode, Instant expiresAt) {
+        return ShortUrl.builder()
+                       .shortCode(shortCode)
+                       .originalUrl(originalUrl)
+                       .expiresAt(expiresAt)
+                       .createdAt(Instant.now())
+                       .build();
     }
-
 }

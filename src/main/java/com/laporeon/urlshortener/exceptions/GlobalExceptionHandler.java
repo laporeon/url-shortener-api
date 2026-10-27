@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -74,5 +73,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.internalServerError().body(error);
     }
-
 }
