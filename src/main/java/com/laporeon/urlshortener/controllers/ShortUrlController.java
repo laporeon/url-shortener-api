@@ -25,13 +25,12 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 
-@Tag(name = "URL")
+@Tag(name = "Short URL")
 @Slf4j
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
 public class UrlController {
-
     private final UrlService urlService;
 
     @ShortenUrlDocumentation
@@ -40,7 +39,6 @@ public class UrlController {
         ShortenUrlResponse shortenUrlResponse = urlService.shortenUrl(dto, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(shortenUrlResponse);
     }
-
 
     @RedirectDocumentation
     @GetMapping("/{shortCode:[A-Za-z0-9]{7}}")
